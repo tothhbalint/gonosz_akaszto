@@ -1,3 +1,3 @@
 # gonosz_akaszto
 
-![LEIRAS]("misc/leiras.png")
+<img src="https://github.com/tothhbalint/gonosz_akaszto/misc/leiras.png">
