@@ -1,17 +1,30 @@
-#include <stdio.h>
-#include <stdbool.h>
+#include "gallows.c"
+#include "player.c"
 
-int write_hun(char* kitalalando){
-    printf("\r");
+void reset(){
+    system("clear");
 }
 
-int write_eng(char* kitalalando){
-    printf("\r");
+void write_hun(char* kitalalando,guessed *guesses){
+    printf("A kitalálandó szó:%s\nMi a következő tipped?\n",kitalalando);
+    for (int i = 0; i < guesses->correct_guesses; i++)
+    {
+        printf("%c",guesses->guesses[i]);
+    }
 }
 
-void write(bool lang,char* kitalalando){
-    if(lang) write_hun(kitalalando);
-    else write_eng(kitalalando);
+void write_eng(char* kitalalando,guessed *guesses){
+    printf("The word to be guessed:%s\nWhat's your next guess?\n",kitalalando);
+    for (int i = 0; i < guesses->correct_guesses; i++)
+    {
+        printf("%c",guesses->guesses[i]);
+    }
+    
+}
+
+void write(bool lang,char* kitalalando,guessed *guesses){
+    if(lang) write_hun(kitalalando,guesses);
+    else write_eng(kitalalando,guesses);
 
 }
 

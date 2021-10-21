@@ -7,6 +7,7 @@
 typedef struct guessed{
     char* guesses;
     int size;
+    int correct_guesses;
 }guessed;
 
 int get_abc(bool lang){
