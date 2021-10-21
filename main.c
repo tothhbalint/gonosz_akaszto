@@ -4,6 +4,10 @@
 
 typedef int lang;
 
+bool init(guessed *guesses){
+    return guessed_foglal(guesses,(choose_lang()));
+}
+
 int main(){
     lang lang=choose_lang();
     printf("%d",lang);
