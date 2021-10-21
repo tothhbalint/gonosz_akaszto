@@ -1,3 +1,3 @@
 # gonosz_akaszto
 
-<img src="https://github.com/tothhbalint/gonosz_akaszto/tree/main/misc/leiras.png">
+<img src="https://github.com/tothhbalint/gonosz_akaszto/blob/main/misc/leiras.png">
