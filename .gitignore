@@ -1,3 +1,4 @@
 .vscode/launch.json
-main.c
+.vscode/tasks.json
 a.out
+main

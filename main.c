@@ -1,6 +1,6 @@
-#include "jatekos.c"
-#include "akaszto.c"
-#include "felulet.c"
+#include "tools/player.c"
+#include "tools/gallows.c"
+#include "tools/interface.c"
 
 typedef int lang;
 
