@@ -55,12 +55,12 @@ char *find_word(guessed guesses,FILE *dictionary)
 
 char *gen_clue(guessed guesses,FILE *dictionary){
     char *word=find_word(guesses,dictionary);
-    for (int i = 0; i < guesses.size; i++)
+    for (int i = 0; i < strle(word); i++)
     {
-        for (int j = 0; j < strlen(word); j++)
+        for (int j = 0; j < guesses.size; j++)
         {
-            if(guesses.guesses[i]==word[j]){
-                word[j]='_';
+            if(guesses.guesses[j]!=word[i]){
+                word[i]='_';
             }
         }
         

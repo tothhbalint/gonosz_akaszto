@@ -1,16 +1,16 @@
-#include "tools/player.c"
-#include "tools/gallows.c"
-#include "tools/interface.c"
+#include "tools/interface.h"
 
-typedef int lang;
+typedef int Lang;
 
-bool init(guessed *guesses){
-    return guessed_foglal(guesses,(choose_lang()));
+guessed guesses;
+
+bool init(guessed guesses,Lang lang){
+    return guessed_foglal(&guesses,lang);
 }
 
 int main(){
-    lang lang=choose_lang();
-    printf("%d",lang);
-    write(lang,"gecit szoptam");
+    Lang lang=choose_lang();
+    init(guesses,lang);
+    reset();
     return 0;
 }

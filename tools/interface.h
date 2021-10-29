@@ -1,5 +1,5 @@
-#include "gallows.c"
-#include "player.c"
+#include "gallows.h"
+#include "player.h"
 
 void reset(){
     system("clear");
