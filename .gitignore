@@ -1,4 +1,2 @@
-a.out
 main
-.vscode/
-cmake-build-debug/
+.vscode
