@@ -1,16 +1,16 @@
-#include "tools/interface.h"
-
-typedef int Lang;
+#include "interface.h"
+#include "game.h"
 
 guessed guesses;
 
-bool init(guessed guesses,Lang lang){
-    return guessed_foglal(&guesses,lang);
+bool init(){
+    choose_lang();
+    choose_difficulty();
+    return guessed_foglal(&guesses);
 }
 
 int main(){
-    Lang lang=choose_lang();
-    init(guesses,lang);
+    init();
     reset();
     return 0;
 }
