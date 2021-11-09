@@ -14,8 +14,10 @@ void choose_lang();
 //3-as nehézség: több szóból álló kifejezések, igék, lehetetlen nehéz normál akasztófa esetén is
 void choose_difficulty();
 
+//Menü kiírása
 void write_menu();
 
+//Játék főoldalának kiírása
 void write_game();
 
 #endif

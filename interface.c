@@ -11,7 +11,7 @@ void write_menu(){
     printf("0) Kilépés (1) Menü\n");
 }
 
-void write_game(char* kitalalando,guessed *guesses){
+void write_game(char* kitalalando){
     printf("\nA kitalálandó szó:%s\nMi a következő tipped?\n",kitalalando);
   /*  for (int i = 0; i < guesses->correct_guesses; i++)
     {

@@ -6,7 +6,10 @@
 int main(){
     initialize();
     while(game_state()==true){
-        game_state();
+        if(!game_state()){
+            reset();
+            break;
+        }
     };
     printf("NACSÁÁÁÁÁÁÁÁ\n *Nyomd meg a spacet a kilépséhez*\n");
     char exit;

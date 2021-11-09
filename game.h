@@ -12,6 +12,7 @@ extern int difficulty;
 extern int lang;
 extern FILE* dictionary;
 
+//tippeket tároló struktúra
 typedef struct guessed{
     char* guesses;
     int size;
@@ -19,26 +20,31 @@ typedef struct guessed{
 }guessed;
 
 
-
+//nyelv alapján lehetséges karakterek számának meghatározása
 int get_abc(bool lang);
 
-FILE *load_dictionary(bool lang);
-
+//helyet foglal a tipp struktúrának
 bool guessed_foglal(guessed *guesses);
 
+//felszabadítja a tipp struktúrát
 void guessed_free(guessed *guesses);
 
+//visszaadja a választható szavak számát
+//int number_of_choices();
 
-int number_of_choices(FILE *dictionary);
+//random szavat választ a lehetőségek közül
+//char *find_word(guessed guesses);
 
-char *find_word(guessed guesses,FILE *dictionary);
+//tippek alapján megadja a tippet (_ _ a _ _ formátumban)
+char *gen_clue(guessed guesses);
 
-char *gen_clue(guessed guesses,FILE *dictionary);
-
+//játék alapjait betölti
 void initialize();
 
+//játékállapotot kezeli (menü, főrész kiirása közti váltogatás)
 bool game_state();
 
+//felszabadítja a foglalat területeket
 void cleanup();
 
 #endif

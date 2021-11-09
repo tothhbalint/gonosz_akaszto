@@ -23,26 +23,8 @@ void guessed_free(guessed *guesses){
 }
 
 
-int number_of_choices(FILE *dictionary){
-    int i=0;
-    char temp;
-    while(!feof(dictionary)){
-        temp=fgetc(dictionary);
-        if(temp=='\n')i++;
-    }
-    rewind(dictionary);
-    return i;
-}
-
-char *find_word(guessed guesses,FILE *dictionary)
-{
-    int size=number_of_choices(dictionary)+1;
-    char *words[size]; 
-    return words[rand()%size];
-}
-
-char *gen_clue(guessed guesses,FILE *dictionary){
-    char *word=find_word(guesses,dictionary);
+char *gen_clue(guessed guesses){
+    char *word;
     for (int i = 0; i < strlen(word); i++)
     {
         for (int j = 0; j < guesses.size; j++)
@@ -53,6 +35,7 @@ char *gen_clue(guessed guesses,FILE *dictionary){
         }
         
     }
+    return "faszom beled verem";
     
 }
 
@@ -72,7 +55,7 @@ void initialize(){
 
 bool game_state(){
     write_menu();
-    write_game("kurva anyád",guesses);
+    write_game(guesses);
     switch(get_guess()){
         case '0': return false;
         case '1':
@@ -82,6 +65,7 @@ bool game_state(){
         default:
             return true;
     }
+    return true;
 }
 
 void cleanup(){
