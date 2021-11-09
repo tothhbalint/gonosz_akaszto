@@ -39,4 +39,6 @@ void initialize();
 
 bool game_state();
 
+void cleanup();
+
 #endif

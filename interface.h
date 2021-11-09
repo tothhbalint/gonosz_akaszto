@@ -16,4 +16,6 @@ void choose_difficulty();
 
 void write_menu();
 
+void write_game();
+
 #endif

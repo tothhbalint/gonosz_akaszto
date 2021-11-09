@@ -19,6 +19,7 @@ extern Words* wordpool;
 void reset();
 void choose_lang();
 void load_pool();
+void clear_pool();
 
 static void load_easy();
 static void load_medium();
