@@ -1,29 +1,65 @@
 #include "dictionary.h"
-#include "interface.h"
 #include "string.h"
 
 FILE* dictionary;
+
+
 Words* wordpool;
 
 static bool loaded;
-static char line[255];
-size_t len = 0;
-ssize_t size;
+static char line[100];
 
-static Words* load_easy(FILE* dict){
-    while(fscanf(dict,"%s\n",line)){
-        if(strlen(line)<5){   
-            Words* new;
-            new = (Words*)malloc(sizeof(Words));
-            new->next=wordpool;
-            new->word=(char*)malloc(sizeof(char*)*strlen(line));
-            new->word=line;
-            wordpool=new;
-            printf("%s ",wordpool->word);
-            strcat(line,"");
+
+void clear_pool(){
+    Words* temp;
+
+    while(wordpool!=NULL){
+        temp = wordpool;
+        wordpool=wordpool->next;
+        free(temp);
+    }
+    wordpool=NULL;
+}
+
+void load_easy(FILE* dict){
+    while(fgets(line,sizeof(line),dictionary)){
+        if(strlen(line)<6&&strlen(line)>4){
+            line[strlen(line)-1]='\0';
+            Words* new = (Words*)malloc(sizeof(Words));
+            new->next=NULL;
+            new->word=strdup(line);
+            if(wordpool==NULL)wordpool=new;
+            wordpool=wordpool->next=new;
         }
+    }
 }
+
+void load_medium(FILE* dict){
+    while(fgets(line,sizeof(line),dictionary)){
+        if(strlen(line)<8&&strlen(line)>6){
+            line[strlen(line)-1]='\0';
+            Words* new = (Words*)malloc(sizeof(Words));
+            new->next=NULL;
+            new->word=strdup(line);
+            if(wordpool==NULL)wordpool=new;
+            wordpool=wordpool->next=new;
+        }
+    }
 }
+
+void load_hard(FILE* dict){
+    while(fgets(line,sizeof(line),dictionary)){
+        if(strlen(line)>8){
+            line[strlen(line)-1]='\0';
+            Words* new = (Words*)malloc(sizeof(Words));
+            new->next=NULL;
+            new->word=strdup(line);
+            if(wordpool==NULL)wordpool=new;
+            wordpool=wordpool->next=new;
+        }
+    }
+}
+
 FILE *load_dictionary(bool lang){
     if(!lang){
         dictionary = fopen("szotar/szavak_magyar.txt","r"); 
@@ -42,20 +78,21 @@ FILE *load_dictionary(bool lang){
     return dictionary;
 }
 
-Words* load_pool(int difficulty){
+void load_pool(int difficulty){
     wordpool = (Words*)malloc(sizeof(Words));
     wordpool = NULL;
     switch (difficulty)
     {
     case 1:
-        wordpool=load_easy(dictionary);
+        load_easy(dictionary);
         break;
-  /*  case 2:
-        wordpool=load_medium(dictionary);
+    case 2:
+        load_medium(dictionary);
         break;
     default:
-        wordpool=load_hard(dictionary);
+        load_hard(dictionary);
         break;
-    }*/
-}}
+    }
+}
+
 

@@ -7,13 +7,21 @@
 
 #include "game.h"
 
+
+typedef struct Words{
+    char* word;
+    struct Words* next;
+}Words;
+
 extern FILE* dictionary;
 extern Words* wordpool;
 
-FILE *load_dictionary(bool lang);
+void reset();
+void choose_lang();
+void load_pool();
 
-Words* load_pool(int difficulty);
-
-Words* delete_pool();
+static void load_easy();
+static void load_medium();
+static void load_hard();
 
 #endif

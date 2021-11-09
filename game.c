@@ -5,7 +5,7 @@
 int difficulty;
 int lang;
 
-guessed guesses;
+guessed* guesses;
 
 int get_abc(bool lang){
     if(lang)return 45;
@@ -56,11 +56,32 @@ char *gen_clue(guessed guesses,FILE *dictionary){
     
 }
 
+char get_guess(){
+    char  temp;
+    scanf("%c",&temp);
+    return temp;
+}
+
 void initialize(){
+    reset(),
     choose_lang();
     choose_difficulty();
     load_dictionary(lang);
     load_pool(difficulty);
-    write("szopfasz",&guesses);
+}
+
+bool game_state(){
+    write_menu();
+    write_game("kurva anyád",guesses);
+    switch(get_guess()){
+        case '1': return false;
+        case '0':
+            clear_pool();
+            initialize();
+            break;
+        default:
+            game_state();
+            break;
+        }
 }
 

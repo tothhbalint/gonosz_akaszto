@@ -18,10 +18,7 @@ typedef struct guessed{
     int correct_guesses;
 }guessed;
 
-typedef struct Words{
-    char* word;
-    struct Words* next;
-}Words;
+
 
 int get_abc(bool lang);
 

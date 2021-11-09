@@ -5,12 +5,17 @@
 void reset(){
     system("clear");
 }
-void write(char* kitalalando,guessed *guesses){
-    printf("A kitalálandó szó:%s\nMi a következő tipped?\n",kitalalando);
-    for (int i = 0; i < guesses->correct_guesses; i++)
+
+void write_menu(){
+    printf("\n(0) Menü (1) Kilépés\n");
+}
+
+void write_game(char* kitalalando,guessed *guesses){
+    printf("\nA kitalálandó szó:%s\nMi a következő tipped?\n",kitalalando);
+  /*  for (int i = 0; i < guesses->correct_guesses; i++)
     {
         printf("%c",guesses->guesses[i]);
-    }
+    }*/
 }
 void choose_lang(){
     printf("Milyen nyelven szeretnél játszani?\n 1-Magyar 2-Angol \n");
