@@ -18,6 +18,11 @@ typedef struct guessed{
     int correct_guesses;
 }guessed;
 
+typedef struct Words{
+    char* word;
+    struct Words* next;
+}Words;
+
 int get_abc(bool lang);
 
 FILE *load_dictionary(bool lang);
@@ -32,5 +37,7 @@ int number_of_choices(FILE *dictionary);
 char *find_word(guessed guesses,FILE *dictionary);
 
 char *gen_clue(guessed guesses,FILE *dictionary);
+
+void initialize();
 
 #endif

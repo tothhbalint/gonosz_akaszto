@@ -1,40 +1,15 @@
 #include "game.h"
+#include "dictionary.h"
+#include "interface.h"
 
 int difficulty;
 int lang;
-FILE* dictionary;
+
+guessed guesses;
 
 int get_abc(bool lang){
     if(lang)return 45;
     else return 27;
-}
-
-FILE *load_dictionary(bool lang){
-    if(!lang){
-        dictionary = fopen("szotar/szavak_magyar.txt","rw"); 
-        if(dictionary==NULL){
-            perror("Hiba a fájl megnyitása közben");
-            return NULL;
-        }
-    }
-    else{
-        dictionary = fopen("szotar/szavak_angol.txt","rw"); 
-        if(dictionary==NULL){
-            perror("Hiba a fájl megnyitása közben");
-            return NULL;
-        }
-    }
-    switch (difficulty)
-    {
-    case 1:
-        /* code */
-        break;
-    case 2:
-        break;
-    default:
-        break;
-    }
-    return dictionary;
 }
 
 bool guessed_foglal(guessed *guesses) {
@@ -79,5 +54,13 @@ char *gen_clue(guessed guesses,FILE *dictionary){
         
     }
     
+}
+
+void initialize(){
+    choose_lang();
+    choose_difficulty();
+    load_dictionary(lang);
+    load_pool(difficulty);
+    write("szopfasz",&guesses);
 }
 
