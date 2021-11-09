@@ -74,14 +74,17 @@ bool game_state(){
     write_menu();
     write_game("kurva anyád",guesses);
     switch(get_guess()){
-        case '1': return false;
-        case '0':
-            clear_pool();
+        case '0': return false;
+        case '1':
+            cleanup();
             initialize();
             break;
         default:
-            game_state();
-            break;
-        }
+            return true;
+    }
 }
 
+void cleanup(){
+    clear_pool();
+    fclose(dictionary);
+}

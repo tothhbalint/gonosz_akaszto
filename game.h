@@ -37,4 +37,6 @@ char *gen_clue(guessed guesses,FILE *dictionary);
 
 void initialize();
 
+bool game_state();
+
 #endif

@@ -7,7 +7,8 @@ void reset(){
 }
 
 void write_menu(){
-    printf("\n(0) Menü (1) Kilépés\n");
+    reset();
+    printf("0) Kilépés (1) Menü\n");
 }
 
 void write_game(char* kitalalando,guessed *guesses){
