@@ -12,6 +12,7 @@ extern int difficulty;
 extern int lang;
 extern FILE* dictionary;
 
+
 //tippeket tároló struktúra
 typedef struct guessed{
     char* guesses;

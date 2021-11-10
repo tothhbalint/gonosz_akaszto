@@ -4,7 +4,11 @@
 
 
 void reset(){
+    #ifdef _WIN32
+    system("cls");
+    #else
     system("clear");
+    #endif
 }
 
 void write_menu(){
