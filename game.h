@@ -15,13 +15,10 @@ extern FILE* dictionary;
 //tippeket tároló struktúra
 typedef struct guessed{
     char* guesses;
-    int size;
     int correct_guesses;
 }guessed;
 
-
-//nyelv alapján lehetséges karakterek számának meghatározása
-int get_abc(bool lang);
+extern guessed guesses;
 
 //helyet foglal a tipp struktúrának
 bool guessed_foglal(guessed *guesses);
@@ -33,10 +30,12 @@ void guessed_free(guessed *guesses);
 //int number_of_choices();
 
 //random szavat választ a lehetőségek közül
-//char *find_word(guessed guesses);
+char *find_word();
+
+void add_guess(guessed* guesses,char new);
 
 //tippek alapján megadja a tippet (_ _ a _ _ formátumban)
-char *gen_clue(guessed guesses);
+char *gen_clue();
 
 //játék alapjait betölti
 void initialize();

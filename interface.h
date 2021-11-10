@@ -18,6 +18,6 @@ void choose_difficulty();
 void write_menu();
 
 //Játék főoldalának kiírása
-void write_game();
+void write_game(char* kitalalando);
 
 #endif

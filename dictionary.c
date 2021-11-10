@@ -8,6 +8,7 @@ Words* wordpool;
 
 static bool loaded;
 static char line[100];
+int no_words=0;
 
 
 void clear_pool(){
@@ -22,14 +23,16 @@ void clear_pool(){
 }
 
 void load_easy(FILE* dict){
+    no_words=0;
+    wordpool=NULL;
     while(fgets(line,sizeof(line),dictionary)){
         if(strlen(line)<6&&strlen(line)>4){
             line[strlen(line)-1]='\0';
             Words* new = (Words*)malloc(sizeof(Words));
-            new->next=NULL;
             new->word=strdup(line);
-            if(wordpool==NULL)wordpool=new;
-            wordpool=wordpool->next=new;
+            new->next=wordpool;
+            wordpool=new;
+            no_words++;
         }
     }
 }
@@ -39,10 +42,10 @@ void load_medium(FILE* dict){
         if(strlen(line)<8&&strlen(line)>6){
             line[strlen(line)-1]='\0';
             Words* new = (Words*)malloc(sizeof(Words));
-            new->next=NULL;
             new->word=strdup(line);
-            if(wordpool==NULL)wordpool=new;
-            wordpool=wordpool->next=new;
+            new->next=wordpool;
+            wordpool=new;
+            no_words++;
         }
     }
 }
@@ -52,10 +55,10 @@ void load_hard(FILE* dict){
         if(strlen(line)>8){
             line[strlen(line)-1]='\0';
             Words* new = (Words*)malloc(sizeof(Words));
-            new->next=NULL;
             new->word=strdup(line);
-            if(wordpool==NULL)wordpool=new;
-            wordpool=wordpool->next=new;
+            new->next=wordpool;
+            wordpool=new;
+            no_words++;
         }
     }
 }

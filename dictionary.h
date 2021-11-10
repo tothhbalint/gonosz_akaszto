@@ -18,6 +18,8 @@ extern FILE* dictionary;
 //szavak halmaza
 extern Words* wordpool;
 
+extern int no_words;
+
 //Szótár fájl megnyitása
 FILE *load_dictionary(bool lang);
 

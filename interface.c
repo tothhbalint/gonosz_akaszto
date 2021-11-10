@@ -1,5 +1,6 @@
 #include "interface.h"
 #include "game.h"
+#include "dictionary.h"
 
 
 void reset(){
@@ -13,10 +14,6 @@ void write_menu(){
 
 void write_game(char* kitalalando){
     printf("\nA kitalálandó szó:%s\nMi a következő tipped?\n",kitalalando);
-  /*  for (int i = 0; i < guesses->correct_guesses; i++)
-    {
-        printf("%c",guesses->guesses[i]);
-    }*/
 }
 void choose_lang(){
     printf("Milyen nyelven szeretnél játszani?\n 1-Magyar 2-Angol \n");
