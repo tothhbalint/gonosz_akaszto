@@ -14,7 +14,10 @@ void write_menu(){
 
 void write_game(char* kitalalando){
     printf("\nA kitalálandó szó:%s\nMi a következő tipped?\n",kitalalando);
+    free(kitalalando);
 }
+
+
 void choose_lang(){
     printf("Milyen nyelven szeretnél játszani?\n 1-Magyar 2-Angol \n");
     scanf("%d",&lang);

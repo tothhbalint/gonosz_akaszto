@@ -6,6 +6,8 @@
 int difficulty;
 int lang;
 
+bool won=false;
+
 guessed guesses;
 
 bool guessed_foglal(guessed *guesses) {
@@ -34,6 +36,9 @@ char* gen_clue(){
             }
         }
         
+    }
+    if(!(bool)strcmp(wordpool->word,word)){
+        won=true;
     }
     return word;
 }
@@ -74,6 +79,7 @@ void add_guess(guessed* guesses,char new){
 }
 
 void initialize(){
+    won=false;
     reset(),
     choose_lang();
     choose_difficulty();
@@ -85,18 +91,32 @@ void initialize(){
 
 bool game_state(){
     write_menu();
-    write_game(gen_clue());
-    char ideg=get_guess();
-    switch(ideg){
-        case '0': return false;
-        case '1':
-            cleanup();
-            initialize();
-            break;
-        default:
-            add_guess(&guesses,ideg);
-            break;
+    if(!won){
+        write_game(gen_clue());
+        char ideg=get_guess();
+        switch(ideg){
+            case '0': return false;
+            case '1':
+                cleanup();
+                initialize();
+                break;
+            default:
+                add_guess(&guesses,ideg);
+                break;
+        }
     }
+    else{
+        printf("%s volt a szo\njatek vege nyertel\nakarsz ujra jatszani?\n",wordpool->word);
+        char ideg;
+        scanf("%c",&ideg);
+        switch(ideg){
+            case '0': return false;
+            default:
+                cleanup();
+                initialize();
+                break;
+        }
+    } 
     return true;
 }
 

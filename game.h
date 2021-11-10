@@ -20,6 +20,8 @@ typedef struct guessed{
 
 extern guessed guesses;
 
+extern bool won;
+
 //helyet foglal a tipp struktúrának
 bool guessed_foglal(guessed *guesses);
 
