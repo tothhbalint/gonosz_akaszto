@@ -1,5 +1,6 @@
 #include "dictionary.h"
 #include "string.h"
+#include "debugmalloc.h"
 
 FILE* dictionary;
 
@@ -82,7 +83,6 @@ FILE *load_dictionary(bool lang){
 }
 
 void load_pool(int difficulty){
-    wordpool = (Words*)malloc(sizeof(Words));
     wordpool = NULL;
     switch (difficulty)
     {

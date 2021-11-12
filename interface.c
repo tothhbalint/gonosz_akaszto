@@ -1,14 +1,15 @@
 #include "interface.h"
 #include "game.h"
 #include "dictionary.h"
+#include "debugmalloc.h"
 
 
 void reset(){
-    #ifdef _WIN32
+    /*#ifdef _WIN32
     system("cls");
     #else
     system("clear");
-    #endif
+    #endif*/
 }
 
 void write_menu(){

@@ -4,8 +4,6 @@
 
 //függvény a felület ürítésére
 void reset();
-//A játék alap kiírása, itt kommunikál a program a játékossal
-void write(char* kitalalando,guessed *guesses);
 //1-es Magyar szótár, 2-es Angol
 void choose_lang();
 

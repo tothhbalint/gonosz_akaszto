@@ -2,6 +2,7 @@
 #include "dictionary.h"
 #include "interface.h"
 #include "time.h"
+#include "debugmalloc.h"
 
 int difficulty;
 int lang;
@@ -45,9 +46,12 @@ char* gen_clue(){
 
 char* find_word(){
     srand(time(0));
+    Words* temp;
     for (int i = 0; i < rand()%no_words; i++)
     {
+        temp=wordpool;
         wordpool=wordpool->next;
+        free(temp);
     }
     return wordpool->word;
 }
@@ -55,6 +59,7 @@ char* find_word(){
 char get_guess(){
     char  temp;
     scanf("%c",&temp);
+    if(temp=='\n')temp=get_guess();
     return temp;
 }
 
@@ -70,11 +75,12 @@ bool check_guess(char new){
 void add_guess(guessed* guesses,char new){
         if(check_guess(new)){
             guesses->correct_guesses++;
-            char* temp=(char*)malloc(guesses->correct_guesses*sizeof(char*));
-            strcpy(temp,guesses->guesses);
+            char* temp=(char*)malloc((guesses->correct_guesses+1)*sizeof(char));
+            if(guesses->correct_guesses>1)strcpy(temp,guesses->guesses);
             free(guesses->guesses);    
             temp[guesses->correct_guesses-1]=new;
             guesses->guesses=temp;
+            guesses->guesses[guesses->correct_guesses]='\0';
     }
 }
 

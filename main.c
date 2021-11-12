@@ -11,7 +11,7 @@ int main(){
     SetConsoleOutputCP(CP_UTF8);
     #endif
     initialize();
-    while(game_state()==true){
+    while(true){
         if(!game_state()){
             reset();
             break;
