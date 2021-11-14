@@ -6,17 +6,17 @@
 
 
 
-void write_menu(){
+static void write_menu(){
     econio_clrscr();
     printf("0) Kilépés (1) Menü\n");
 }
 
-void write_game(GameVars* game){
-    printf("\nA kitalálandó szó:%s\nMi a következő tipped?\n",(game->current_clue));
+static void write_game(GameVars* game){
+    printf("\nEddigi tippjeid:%s\nA kitalálandó szó:%s\nMi a következő tipped?\n",game->guesses->guesses,(game->current_clue));
 }
 
 
-int choose_lang(){
+static int choose_lang(){
     write_menu();
     int lang;
     printf("Milyen nyelven szeretnél játszani?\n 1-Magyar 2-Angol \n");
@@ -31,7 +31,7 @@ int choose_lang(){
     return lang;
 }
 
-int choose_difficulty(){
+static int choose_difficulty(){
     write_menu();
     int difficulty;
     printf("Milyen nehézségen szeretnél játszani?\n 1-Könnyű 2-Közepes 3-Nehéz \n");
@@ -52,10 +52,16 @@ GameVars* initialize(){
     GameVars* game=InitGame(difficulty,lang);
     char* a=find_word(game->dictionary);
     game->current_clue=(char*)calloc(strlen(a),sizeof(char));
+    for (int i = 0; i < strlen(a); i++)
+    {
+        game->current_clue[i]='_';
+    }
+    game->current_clue[strlen(a)]='\0';
+    
     return game;
 }
 
-bool game_loop(GameVars* game){
+static bool game_loop(GameVars* game){
     write_menu();
     if(!game->won){
         write_game(game);
@@ -74,7 +80,7 @@ bool game_loop(GameVars* game){
     }
     else{
         write_menu();
-        printf("%s volt a szo\njatek vege nyertel\nakarsz ujra jatszani?\n",game->dictionary->wordpool->word);
+        printf("%s volt a szo\njatek vege nyertel\n*Új játékhoz nyomj meg egy gombot*\n",game->dictionary->wordpool->word);
         char ideg;
         ideg=econio_getch();
         switch(ideg){

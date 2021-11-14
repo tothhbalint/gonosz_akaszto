@@ -19,8 +19,6 @@ typedef struct DictionaryVars{
     int no_words;
 }DictionaryVars;
 
-
-
 //Szótár fájl megnyitása, szavak beolvasása
 DictionaryVars* load_dictionary(int difficulty,int lan);
 //láncolt lista felszabadítása

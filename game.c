@@ -60,26 +60,39 @@ bool check_guess(char new,DictionaryVars dict){
     
 }
 
-void add_guess(char new, GameVars* game){
-    if(check_guess(new,*game->dictionary)){
-        game->guesses->correct++;
-        char* temp=(char*)malloc((game->guesses->correct+1)*sizeof(char));
-        //jó tipp tárolása
-        if(game->guesses->correct>1)strcpy(temp,game->guesses->correct_guesses);
-        free(game->guesses->correct_guesses);    
-        temp[game->guesses->correct-1]=new;
-        game->guesses->correct_guesses=temp;;
-        game->guesses->correct_guesses[game->guesses->correct]='\0';
-        game->current_clue=gen_clue(game,*game->dictionary,*game->guesses);
+static bool isin(char new, GameVars* game){
+    for (int i = 0; i < game->guesses->number_of_guesses; i++)
+    {
+        if(new==game->guesses->guesses[i]){
+            return true;
+        }
     }
-    //többi tipp tárolása
-    game->guesses->number_of_guesses++;
-    char* temp=(char*)malloc((game->guesses->number_of_guesses+1)*sizeof(char));
-    if(game->guesses->number_of_guesses>1)strcpy(temp,game->guesses->guesses);
-    free(game->guesses->guesses);    
-    temp[game->guesses->number_of_guesses-1]=new;
-    game->guesses->guesses=temp;;
-    game->guesses->guesses[game->guesses->number_of_guesses]='\0';
+    return false;
+    
+}
+
+void add_guess(char new, GameVars* game){
+    if(!isin(new,game)){
+        if(check_guess(new,*game->dictionary)){
+            game->guesses->correct++;
+            char* temp=(char*)malloc((game->guesses->correct+1)*sizeof(char));
+            //jó tipp tárolása
+            if(game->guesses->correct>1)strcpy(temp,game->guesses->correct_guesses);
+            free(game->guesses->correct_guesses);    
+            temp[game->guesses->correct-1]=new;
+            game->guesses->correct_guesses=temp;;
+            game->guesses->correct_guesses[game->guesses->correct]='\0';
+            game->current_clue=gen_clue(game,*game->dictionary,*game->guesses);
+        }
+        //többi tipp tárolása
+        game->guesses->number_of_guesses++;
+        char* temp=(char*)malloc((game->guesses->number_of_guesses+1)*sizeof(char));
+        if(game->guesses->number_of_guesses>1)strcpy(temp,game->guesses->guesses);
+        free(game->guesses->guesses);    
+        temp[game->guesses->number_of_guesses-1]=new;
+        game->guesses->guesses=temp;;
+        game->guesses->guesses[game->guesses->number_of_guesses]='\0';
+    }
 }
 
 GameVars* InitGame(int difficulty,int lang){
