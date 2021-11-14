@@ -7,5 +7,5 @@
 
 ##TODO
 Szókeresés megvalósítása
-    REndezhető láncolt lista
+    Rendezhető láncolt lista
     Nem használt elemek felszabadítása

@@ -1,27 +1,27 @@
 #include "interface.h"
 #include "game.h"
 #include "dictionary.h"
+#include "econio.h"
+#include "debugmalloc.h"
 #ifdef _WIN32
 #include "Windows.h"
 #endif
-
 
 int main(){
     #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
     #endif
-    initialize();
-    while(true){
-        if(!game_state()){
-            reset();
-            break;
-        }
-    };
-    printf("NACSÁÁÁÁÁÁÁÁ\n *Nyomd meg a spacet a kilépséhez*\n");
-    char exit;
+    econio_rawmode();
+    
+    GameVars* game=initialize();
+    
+    run_game(game);
+    
+    printf("\n*Nyomd meg a spacet a kilépéshez*\n");
+    
     do{
-        scanf("%c",&exit);
-    }while(exit!=' ');
-    cleanup();
+        if(econio_getch()==' ') break;
+    }while(true);
+    
     return 0;
 }

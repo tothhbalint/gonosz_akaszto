@@ -1,101 +1,118 @@
 #include "dictionary.h"
 #include "string.h"
 #include "debugmalloc.h"
+#include "time.h"
 
-FILE* dictionary;
+static char line[450];
 
-
-Words* wordpool;
-
-static bool loaded;
-static char line[100];
-int no_words=0;
-
-
-void clear_pool(){
+static void clear_pool(DictionaryVars* Dictionary){
     Words* temp;
 
-    while(wordpool!=NULL){
-        temp = wordpool;
-        wordpool=wordpool->next;
+    while(Dictionary->wordpool!=NULL){
+        temp = Dictionary->wordpool;
+        Dictionary->wordpool=Dictionary->wordpool->next;
         free(temp);
     }
-    wordpool=NULL;
+    Dictionary->dictionary=NULL;
 }
 
-void load_easy(FILE* dict){
-    no_words=0;
-    wordpool=NULL;
-    while(fgets(line,sizeof(line),dictionary)){
+static void load_easy(DictionaryVars* Dictionary){
+    Dictionary->no_words=0;
+    Dictionary->wordpool=NULL;
+    while(fgets(line,sizeof(line),Dictionary->dictionary)){
         if(strlen(line)<6&&strlen(line)>4){
             line[strlen(line)-1]='\0';
             Words* new = (Words*)malloc(sizeof(Words));
             new->word=strdup(line);
-            new->next=wordpool;
-            wordpool=new;
-            no_words++;
+            new->next=Dictionary->wordpool;
+            Dictionary->wordpool=new;
+            Dictionary->no_words++;
         }
     }
 }
 
-void load_medium(FILE* dict){
-    while(fgets(line,sizeof(line),dictionary)){
+static void load_medium(DictionaryVars* Dictionary){
+    Dictionary->no_words=0;
+    while(fgets(line,sizeof(line),Dictionary->dictionary)){
         if(strlen(line)<8&&strlen(line)>6){
             line[strlen(line)-1]='\0';
             Words* new = (Words*)malloc(sizeof(Words));
             new->word=strdup(line);
-            new->next=wordpool;
-            wordpool=new;
-            no_words++;
+            new->next=Dictionary->wordpool;
+            Dictionary->wordpool=new;
+            Dictionary->no_words++;
         }
     }
 }
 
-void load_hard(FILE* dict){
-    while(fgets(line,sizeof(line),dictionary)){
+static void load_hard(DictionaryVars* Dictionary){
+    Dictionary->no_words=0;
+    while(fgets(line,sizeof(line),Dictionary->dictionary)){
         if(strlen(line)>8){
             line[strlen(line)-1]='\0';
             Words* new = (Words*)malloc(sizeof(Words));
             new->word=strdup(line);
-            new->next=wordpool;
-            wordpool=new;
-            no_words++;
+            new->next=Dictionary->wordpool;
+            Dictionary->wordpool=new;
+            Dictionary->no_words++;
         }
     }
 }
 
-FILE *load_dictionary(bool lang){
-    if(!lang){
-        dictionary = fopen("szotar/szavak_magyar.txt","r"); 
-        if(dictionary==NULL){
+
+static void load_pool(int difficulty, DictionaryVars* Dictionary){
+    Dictionary->wordpool = NULL;
+    switch (difficulty)
+    {
+    case 1:
+        load_easy(Dictionary);
+        break;
+    case 2:
+        load_medium(Dictionary);
+        break;
+    default:
+        load_hard(Dictionary);
+        break;
+    }
+}
+
+DictionaryVars* load_dictionary(int difficulty,int lang){
+    DictionaryVars* Dictionary=malloc(sizeof(DictionaryVars));
+    if(!(bool)lang){
+        Dictionary->dictionary = fopen("szotar/szavak_magyar.txt","r"); 
+        if(Dictionary->dictionary==NULL){
             perror("Hiba a fájl megnyitása közben");
             return NULL;
         }
     }
     else{
-        dictionary = fopen("szotar/szavak_angol.txt","r"); 
-        if(dictionary==NULL){
+        Dictionary->dictionary = fopen("szotar/szavak_angol.txt","r"); 
+        if(Dictionary->dictionary==NULL){
             perror("Hiba a fájl megnyitása közben");
             return NULL;
         }
     }
-    return dictionary;
+    load_pool(difficulty,Dictionary);
+    fclose(Dictionary->dictionary);
+    return Dictionary;
 }
 
-void load_pool(int difficulty){
-    wordpool = NULL;
-    switch (difficulty)
+
+char* find_word(DictionaryVars* dict){
+    srand(time(0));
+    Words* temp;
+    for (int i = 0; i < rand()%dict->no_words; i++)
     {
-    case 1:
-        load_easy(dictionary);
-        break;
-    case 2:
-        load_medium(dictionary);
-        break;
-    default:
-        load_hard(dictionary);
-        break;
+        temp=dict->wordpool;
+        dict->wordpool=dict->wordpool->next;
+        free(temp);
     }
+    return dict->wordpool->word;
 }
 
-
+void clear_dictionary(DictionaryVars* dictionary){
+    dictionary->no_words=0;
+    clear_pool(dictionary);
+    if(dictionary->dictionary!=NULL)fclose(dictionary->dictionary);
+    free(dictionary);
+}

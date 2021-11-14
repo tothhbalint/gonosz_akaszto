@@ -1,134 +1,100 @@
 #include "game.h"
-#include "dictionary.h"
 #include "interface.h"
 #include "time.h"
 #include "debugmalloc.h"
+#include "econio.h"
 
-int difficulty;
-int lang;
+#include "dictionary.h"
 
-bool won=false;
-
-guessed guesses;
-
-bool guessed_foglal(guessed *guesses) {
-    guesses->correct_guesses=0;
-    guesses->guesses=(char*)malloc(guesses->correct_guesses*sizeof(char*));
-    return guesses->guesses != NULL;
+Guesses* guessed_foglal(){
+    Guesses* guesses=(Guesses*)malloc(sizeof(Guesses));
+    guesses->number_of_guesses=0;
+    guesses->guesses=(char*)malloc(guesses->number_of_guesses*sizeof(char*));
+    guesses->correct=0;
+    guesses->correct_guesses=(char*)malloc(guesses->correct*sizeof(char*));
+    return guesses;
 }
 
-void guessed_free(guessed *guesses){
+void guessed_free(Guesses *guesses){
+    free(guesses->correct_guesses);
     free(guesses->guesses);
+    free(guesses);
 }
 
-char* gen_clue(){
-    char* word=(char*)calloc((strlen(wordpool->word)+1),sizeof(char));
-        for (int i = 0; i < strlen(wordpool->word); i++)
+static char* gen_clue(GameVars* game, DictionaryVars dict, Guesses guess){
+    free(game->current_clue);
+    char* word=(char*)calloc((strlen(dict.wordpool->word)+1),sizeof(char));
+        for (int i = 0; i < strlen(dict.wordpool->word); i++)
     {
         if(word[i]='0')
             word[i]='_';
     }
-    for (int i = 0; i < guesses.correct_guesses; i++)
+    for (int i = 0; i < guess.correct; i++)
     {
-        for (int j = 0; j < strlen(wordpool->word); j++)
+        for (int j = 0; j < strlen(dict.wordpool->word); j++)
         {
-            if(guesses.guesses[i]==wordpool->word[j]){
-                word[j]=wordpool->word[j];
+            if(guess.correct_guesses[i]==dict.wordpool->word[j]){
+                word[j]=dict.wordpool->word[j];
             }
         }
         
     }
-    if(!(bool)strcmp(wordpool->word,word)){
-        won=true;
+    if(!(bool)strcmp(dict.wordpool->word,word)){
+        game->won=true;
     }
     return word;
 }
 
-char* find_word(){
-    srand(time(0));
-    Words* temp;
-    for (int i = 0; i < rand()%no_words; i++)
-    {
-        temp=wordpool;
-        wordpool=wordpool->next;
-        free(temp);
-    }
-    return wordpool->word;
-}
-
 char get_guess(){
     char  temp;
-    scanf("%c",&temp);
-    if(temp=='\n')temp=get_guess();
+    temp=econio_getch();
     return temp;
 }
 
-bool check_guess(char new){
-    for (int i = 0; i < strlen(wordpool->word); i++)
+bool check_guess(char new,DictionaryVars dict){
+    for (int i = 0; i < strlen(dict.wordpool->word); i++)
     {
-        if(new==wordpool->word[i]) return true;
+        if(new==dict.wordpool->word[i]) return true;
     }
     return false;
     
 }
 
-void add_guess(guessed* guesses,char new){
-        if(check_guess(new)){
-            guesses->correct_guesses++;
-            char* temp=(char*)malloc((guesses->correct_guesses+1)*sizeof(char));
-            if(guesses->correct_guesses>1)strcpy(temp,guesses->guesses);
-            free(guesses->guesses);    
-            temp[guesses->correct_guesses-1]=new;
-            guesses->guesses=temp;
-            guesses->guesses[guesses->correct_guesses]='\0';
+void add_guess(char new, GameVars* game){
+    if(check_guess(new,*game->dictionary)){
+        game->guesses->correct++;
+        char* temp=(char*)malloc((game->guesses->correct+1)*sizeof(char));
+        //jó tipp tárolása
+        if(game->guesses->correct>1)strcpy(temp,game->guesses->correct_guesses);
+        free(game->guesses->correct_guesses);    
+        temp[game->guesses->correct-1]=new;
+        game->guesses->correct_guesses=temp;;
+        game->guesses->correct_guesses[game->guesses->correct]='\0';
+        game->current_clue=gen_clue(game,*game->dictionary,*game->guesses);
     }
+    //többi tipp tárolása
+    game->guesses->number_of_guesses++;
+    char* temp=(char*)malloc((game->guesses->number_of_guesses+1)*sizeof(char));
+    if(game->guesses->number_of_guesses>1)strcpy(temp,game->guesses->guesses);
+    free(game->guesses->guesses);    
+    temp[game->guesses->number_of_guesses-1]=new;
+    game->guesses->guesses=temp;;
+    game->guesses->guesses[game->guesses->number_of_guesses]='\0';
 }
 
-void initialize(){
-    won=false;
-    reset(),
-    choose_lang();
-    choose_difficulty();
-    guessed_foglal(&guesses);
-    load_dictionary(lang);
-    load_pool(difficulty);
-    find_word();
+GameVars* InitGame(int difficulty,int lang){
+    GameVars* game=(GameVars*)malloc(sizeof(GameVars));
+    game->won=false;
+    game->guesses=guessed_foglal();
+    game->lang=lang;
+    game->difficulty=difficulty;
+    game->dictionary=load_dictionary(difficulty,lang);
+    return game;
 }
 
-bool game_state(){
-    write_menu();
-    if(!won){
-        write_game(gen_clue());
-        char ideg=get_guess();
-        switch(ideg){
-            case '0': return false;
-            case '1':
-                cleanup();
-                initialize();
-                break;
-            default:
-                add_guess(&guesses,ideg);
-                break;
-        }
-    }
-    else{
-        printf("%s volt a szo\njatek vege nyertel\nakarsz ujra jatszani?\n",wordpool->word);
-        char ideg;
-        scanf("%c",&ideg);
-        switch(ideg){
-            case '0': return false;
-            default:
-                cleanup();
-                initialize();
-                break;
-        }
-    } 
-    return true;
-}
-
-void cleanup(){
-    clear_pool();
-    no_words=0;
-    fclose(dictionary);
-    guessed_free(&guesses);
+void CloseGame(GameVars* game){
+    free(game->current_clue);
+    guessed_free(game->guesses);
+    clear_dictionary(game->dictionary);
+    free(game);
 }

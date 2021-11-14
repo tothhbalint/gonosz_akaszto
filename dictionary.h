@@ -5,36 +5,28 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "game.h"
-
 //szavakat tároló láncolt lista
 typedef struct Words{
     char* word;
     struct Words* next;
 }Words;
 
-//szótárra mutató pointer
-extern FILE* dictionary;
-//szavak halmaza
-extern Words* wordpool;
+typedef struct DictionaryVars{
+    //szótárra mutató pointerg
+    FILE* dictionary;
+    //szavak halmaza
+    Words* wordpool;
+    int no_words;
+}DictionaryVars;
 
-extern int no_words;
 
-//Szótár fájl megnyitása
-FILE *load_dictionary(bool lang);
 
-//törli a felületet
-void reset();
-//nyelv választáshoz
-void choose_lang();
-//szavak betöltése
-void load_pool();
+//Szótár fájl megnyitása, szavak beolvasása
+DictionaryVars* load_dictionary(int difficulty,int lan);
 //láncolt lista felszabadítása
-void clear_pool();
+void clear_dictionary(DictionaryVars* Dictionary);
+//random szót választ a lehetőségek közül, későbbiekben komplex keresés
+char* find_word(DictionaryVars* dict);
 
-//szavak betöltése nehézség alapján
-static void load_easy();
-static void load_medium();
-static void load_hard();
 
 #endif
