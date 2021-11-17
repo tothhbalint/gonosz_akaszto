@@ -12,12 +12,14 @@ static void write_menu(){
 }
 
 static void write_game(GameVars* game){
-    printf("\nEddigi tippjeid:%s\nA kitalálandó szó:%s\nMi a következő tipped?\n",game->guesses->guesses,(game->current_clue));
+    if(game->guesses->number_of_guesses>0){
+        printf("\nEddigi tippjeid:%s",game->guesses->guesses);
+    }
+    printf("\nA kitalálandó szó:%s\nMi a következő tipped?\n",(game->current_clue));
 }
 
 
 static int choose_lang(){
-    write_menu();
     int lang;
     printf("Milyen nyelven szeretnél játszani?\n 1-Magyar 2-Angol \n");
     lang=econio_getch()-'0';
@@ -32,7 +34,6 @@ static int choose_lang(){
 }
 
 static int choose_difficulty(){
-    write_menu();
     int difficulty;
     printf("Milyen nehézségen szeretnél játszani?\n 1-Könnyű 2-Közepes 3-Nehéz \n");
     difficulty=econio_getch()-'0';
@@ -51,7 +52,7 @@ GameVars* initialize(){
     int difficulty=choose_difficulty();
     GameVars* game=InitGame(difficulty,lang);
     char* a=find_word(game->dictionary);
-    game->current_clue=(char*)calloc(strlen(a),sizeof(char));
+    game->current_clue=(char*)calloc(strlen(a)+1,sizeof(char));
     for (int i = 0; i < strlen(a); i++)
     {
         game->current_clue[i]='_';
