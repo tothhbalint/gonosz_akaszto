@@ -48,6 +48,7 @@ static int choose_difficulty(){
 }
 
 GameVars* initialize(){
+    econio_clrscr();
     int lang=choose_lang();
     int difficulty=choose_difficulty();
     GameVars* game=InitGame(difficulty,lang);

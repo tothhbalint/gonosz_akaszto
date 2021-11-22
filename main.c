@@ -22,6 +22,8 @@ int main(){
     do{
         if(econio_getch()==' ') break;
     }while(true);
+
+    //econio_clrscr();
     
     return 0;
 }

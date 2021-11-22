@@ -3,7 +3,9 @@
 #include "debugmalloc.h"
 #include "time.h"
 
+
 static char line[450];
+
 
 static void clear_pool(DictionaryVars* Dictionary){
     Words* temp;
@@ -97,6 +99,21 @@ DictionaryVars* load_dictionary(int difficulty,int lang){
     return Dictionary;
 }
 
+
+
+Words* tighten_pool(Words* wordpool,Words* wordset){
+    Words* begin=wordpool;
+    while(wordset!=NULL){
+        while(wordpool!=NULL&&wordpool->word!=wordset->word){
+            wordpool=wordpool->next;
+        }
+        if(wordpool==NULL){
+            wordpool=begin->next;
+            free(begin);
+            wordset=wordset->next;
+        }
+    }   
+}
 
 char* find_word(DictionaryVars* dict){
     srand(time(0));

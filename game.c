@@ -3,8 +3,10 @@
 #include "time.h"
 #include "debugmalloc.h"
 #include "econio.h"
-
+#include "math.h"
 #include "dictionary.h"
+
+static int sizeof_set=0;
 
 Guesses* guessed_foglal(){
     Guesses* guesses=(Guesses*)malloc(sizeof(Guesses));
@@ -92,6 +94,123 @@ void add_guess(char new, GameVars* game){
         temp[game->guesses->number_of_guesses-1]=new;
         game->guesses->guesses=temp;;
         game->guesses->guesses[game->guesses->number_of_guesses]='\0';
+    }
+}
+
+char** gen_patterns(char guess,int len){
+    char** patterns=(char**)malloc(sizeof(char*)*pow(2,len));
+    for (int i = 0; i < pow(2,len); i++)
+    {            
+        patterns[i] = (char*)malloc(sizeof(char)*len);
+        int temp = i;
+        for (int j = 0; j < len; j++)
+        {
+            if (temp%2 == 1)
+                patterns[i][j] = guess;
+            else
+                patterns[i][j] = '_';
+                temp = temp/2;
+        }
+    }
+    return patterns;
+}
+
+char** gen_new_patterns(char* pattern,char guess){
+    int empty=0;
+    for (int i = 0; i < strlen(pattern); i++)
+    {
+        empty++;
+    }
+    char** patterns=(char**)malloc(sizeof(char*)*pow(2,empty));
+    for (int i = 0; i < pow(2,empty); i++)
+    {
+        patterns[i] = (char*)malloc(sizeof(char)*strlen(pattern));
+        int temp = i;
+        for (int j = 0; j < strlen(pattern); j++)
+        {
+            if(pattern[j]=='_'){
+                if (temp%2 == 1)
+                    patterns[i][j] = guess;
+                else
+                    patterns[i][j] = '_';
+                    temp = temp/2;
+            }else patterns[i][j]=pattern[j];
+        }
+    }
+    return patterns;
+}
+
+bool pattern_match(char* pattern,char* word,char guess){
+
+        bool temp=false;
+        for (int j = 0; j < strlen(word); j++)
+        {
+            if(pattern[j]!='_'){
+                if(pattern[j]==word[j])temp=true;
+                else{
+                    temp=false;
+                    break;
+                }
+            }else if(word[j]==guess){
+                temp=false;
+                break;}
+        }
+        if(temp){
+            printf("%s ",pattern);
+            return temp;
+        }
+    
+}
+
+Words* get_set(Words* wordpool,char* pattern,char guess){
+    Words* wordset=NULL;
+    for (int i = 0; wordpool!=NULL; i++)
+    {
+        if(pattern_match(pattern,wordpool->word,guess)){
+            Words* tmp=(Words*)malloc(sizeof(Words));
+            tmp->word=wordpool->word;
+            wordpool=wordpool->next;
+            tmp->next=wordset;
+            wordset=tmp;
+        }
+    }
+}
+
+int get_set_size(Words* wordset){
+    int size=0;
+    while (wordset!=NULL)
+    {
+        size++;
+    }
+    return size;
+    
+}
+
+Words* biggest_set(Words* wordpool,char guess,int len){
+    Words* set;
+    char** patterns=gen_patterns(guess,len);
+    for (int i = 0; i < pow(2,len); i++)
+    {
+        Words* tmp=get_set(wordpool,patterns[i],guess);
+        int size=get_set_size(tmp);
+        if(size>sizeof_set){ 
+            size=sizeof_set;
+            set=tmp;
+        }else{
+            free_set(tmp);
+            free(patterns[i]);
+        }
+    }
+    free(patterns);
+    return set;
+}
+
+void free_set(Words* wordset){
+    Words* temp;
+    while(wordset!=NULL){
+        temp=wordset;
+        wordset=wordset->next;
+        free(temp);
     }
 }
 
