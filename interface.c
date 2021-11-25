@@ -4,7 +4,11 @@
 #include "debugmalloc.h"
 #include "econio.h"
 
-
+void bad_guess(GameVars* game){
+    econio_clrscr();
+    if(!game->won)
+        printf("Hibas a tipp tesomsz\n");
+}
 
 static void write_menu(){
     econio_clrscr();
@@ -52,14 +56,6 @@ GameVars* initialize(){
     int lang=choose_lang();
     int difficulty=choose_difficulty();
     GameVars* game=InitGame(difficulty,lang);
-    char* a=find_word(game->dictionary);
-    game->current_clue=(char*)calloc(strlen(a)+1,sizeof(char));
-    for (int i = 0; i < strlen(a); i++)
-    {
-        game->current_clue[i]='_';
-    }
-    game->current_clue[strlen(a)]='\0';
-    
     return game;
 }
 
@@ -81,8 +77,7 @@ static bool game_loop(GameVars* game){
         }
     }
     else{
-        write_menu();
-        printf("%s volt a szo\njatek vege nyertel\n*Új játékhoz nyomj meg egy gombot*\n",game->dictionary->wordpool->word);
+        printf("%s volt a szo\nVesztettel\nSok sikert legkozelebb\n*Új játékhoz nyomj meg egy gombot*\n",game->dictionary->wordpool->word);
         char ideg;
         ideg=econio_getch();
         switch(ideg){

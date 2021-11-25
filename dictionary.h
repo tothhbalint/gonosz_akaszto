@@ -23,8 +23,6 @@ typedef struct DictionaryVars{
 DictionaryVars* load_dictionary(int difficulty,int lan);
 //láncolt lista felszabadítása
 void clear_dictionary(DictionaryVars* Dictionary);
-//random szót választ a lehetőségek közül, későbbiekben komplex keresés
-char* find_word(DictionaryVars* dict);
 
 
 #endif

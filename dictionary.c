@@ -100,33 +100,6 @@ DictionaryVars* load_dictionary(int difficulty,int lang){
 }
 
 
-
-Words* tighten_pool(Words* wordpool,Words* wordset){
-    Words* begin=wordpool;
-    while(wordset!=NULL){
-        while(wordpool!=NULL&&wordpool->word!=wordset->word){
-            wordpool=wordpool->next;
-        }
-        if(wordpool==NULL){
-            wordpool=begin->next;
-            free(begin);
-            wordset=wordset->next;
-        }
-    }   
-}
-
-char* find_word(DictionaryVars* dict){
-    srand(time(0));
-    Words* temp;
-    for (int i = 0; i < rand()%dict->no_words; i++)
-    {
-        temp=dict->wordpool;
-        dict->wordpool=dict->wordpool->next;
-        free(temp);
-    }
-    return dict->wordpool->word;
-}
-
 void clear_dictionary(DictionaryVars* dictionary){
     dictionary->no_words=0;
     clear_pool(dictionary);
