@@ -30,7 +30,7 @@ static char* get_base_clue(GameVars* game){
     //szóhossz generálása
     switch(game->difficulty){
         case 1:
-            wordlen=4;
+            wordlen=5;
             break;
         case 2:
             wordlen=rand()%2+6;
@@ -41,7 +41,7 @@ static char* get_base_clue(GameVars* game){
     }
     //szólista szűkítése
     Words* temp1=game->dictionary->wordpool;
-    for (; temp1->next!=NULL; temp1=temp1->next)
+    for (; temp1!=NULL && temp1->next!=NULL; temp1=temp1->next)
     {
         if(strlen(temp1->next->word)!=wordlen){
             Words* temp=temp1->next;
@@ -127,17 +127,17 @@ char** gen_new_patterns(char* pattern,char guess){
 }
 
 bool pattern_match(char* pattern,char* word,char guess){
-
         bool temp=false;
         for (int j = 0; j < strlen(word); j++)
         {
             if(pattern[j]!='_'){
-                if(pattern[j]==word[j])temp=true;
-                else{
-                    temp=false;
-                    break;
-                }
+                if(pattern[j]==word[j])
+                    temp=true;
+                else
+                    return false;
             }
+            else if(word[j]==guess)
+                return false;
         }
         return temp;
     }
@@ -195,7 +195,7 @@ Words* biggest_set(GameVars* game,char guess){
     patterns=gen_new_patterns(game->current_clue,guess);
     char* final_pattern;
     free(patterns[0]);
-    for (int i = 1; i < pow(2,4); i++)
+    for (int i = 1; i < pow(2,strlen(game->current_clue)); i++)
     {
         if(!strcmp(patterns[i],game->current_clue)){
             free(patterns[i]);
@@ -291,7 +291,6 @@ GameVars* InitGame(int difficulty,int lang){
 }
 
 void CloseGame(GameVars* game){
-    free(game->current_clue);
     guessed_free(game->guesses);
     clear_dictionary(game->dictionary);
     free(game);

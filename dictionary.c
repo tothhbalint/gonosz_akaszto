@@ -13,6 +13,7 @@ static void clear_pool(DictionaryVars* Dictionary){
     while(Dictionary->wordpool!=NULL){
         temp = Dictionary->wordpool;
         Dictionary->wordpool=Dictionary->wordpool->next;
+        free(temp->word);
         free(temp);
     }
     Dictionary->dictionary=NULL;
@@ -22,10 +23,11 @@ static void load_easy(DictionaryVars* Dictionary){
     Dictionary->no_words=0;
     Dictionary->wordpool=NULL;
     while(fgets(line,sizeof(line),Dictionary->dictionary)){
-        if(strlen(line)<6&&strlen(line)>4){
+        if(strlen(line)<7&&strlen(line)>4){
             line[strlen(line)-1]='\0';
             Words* new = (Words*)malloc(sizeof(Words));
-            new->word=strdup(line);
+            new->word=(char*)malloc(sizeof(char)*(strlen(line)+1));
+            strcpy(new->word,line);
             new->next=Dictionary->wordpool;
             Dictionary->wordpool=new;
             Dictionary->no_words++;
@@ -36,10 +38,11 @@ static void load_easy(DictionaryVars* Dictionary){
 static void load_medium(DictionaryVars* Dictionary){
     Dictionary->no_words=0;
     while(fgets(line,sizeof(line),Dictionary->dictionary)){
-        if(strlen(line)<8&&strlen(line)>6){
+        if(strlen(line)<10&&strlen(line)>7){
             line[strlen(line)-1]='\0';
             Words* new = (Words*)malloc(sizeof(Words));
-            new->word=strdup(line);
+            new->word=(char*)malloc(sizeof(char)*(strlen(line)+1));
+            strcpy(new->word,line);
             new->next=Dictionary->wordpool;
             Dictionary->wordpool=new;
             Dictionary->no_words++;
@@ -53,7 +56,8 @@ static void load_hard(DictionaryVars* Dictionary){
         if(strlen(line)>8){
             line[strlen(line)-1]='\0';
             Words* new = (Words*)malloc(sizeof(Words));
-            new->word=strdup(line);
+            new->word=(char*)malloc(sizeof(char)*(strlen(line)+1));
+            strcpy(new->word,line);
             new->next=Dictionary->wordpool;
             Dictionary->wordpool=new;
             Dictionary->no_words++;
