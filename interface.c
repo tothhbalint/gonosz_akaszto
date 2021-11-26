@@ -4,10 +4,15 @@
 #include "debugmalloc.h"
 #include "econio.h"
 
-void bad_guess(GameVars* game){
+void bad_guess(GameVars* game,Words* set){
     econio_clrscr();
-    if(!game->won)
-        printf("Hibas a tipp tesomsz\n\n");
+    game->lives--;
+    if(!game->lost)
+        printf("Rossz a tipp!\n\n");
+    else{
+        printf("A tipped %s volt\nA szó %s volt\nVesztettel\nSok sikert legkozelebb\n*Új játékhoz nyomj meg egy gombot*\n",set->word,game->dictionary->wordpool->word);
+        free_set(set);
+    }
 }
 
 static void write_menu(){
@@ -15,8 +20,11 @@ static void write_menu(){
 }
 
 static void write_game(GameVars* game){
+    printf("Életeid száma:%d\n",game->lives);
     if(game->guesses->number_of_guesses>0){
         printf("\nEddigi tippjeid:%s",game->guesses->guesses);
+    }else{
+        printf("Sok szerencsét!");
     }
     printf("\nA kitalálandó szó:%s\nMi a következő tipped?\n",(game->current_clue));
 }
@@ -28,7 +36,7 @@ static int choose_lang(){
     lang=econio_getch()-'0';
     if(lang<1||lang>2){
         econio_clrscr();
-        printf("Nullát vagy egyet adj meg!\n\n");
+        printf("Egyet vagy kettőt adj meg!\n\n");
         lang=-1;
         choose_lang();
     }else lang-=1;
@@ -60,7 +68,7 @@ GameVars* initialize(){
 
 static bool game_loop(GameVars* game){
     write_menu();
-    if(!game->won){
+    if(!game->lost&&game->lives!=0){
         write_game(game);
         char ideg=econio_getch();
         switch(ideg){
@@ -77,8 +85,8 @@ static bool game_loop(GameVars* game){
                 break;
         }
     }
-    else{
-        printf("%s volt a szo\nVesztettel\nSok sikert legkozelebb\n*Új játékhoz nyomj meg egy gombot*\n",game->dictionary->wordpool->next->word);
+    else if(game->lives==0){
+        printf("Elfogyott a próbáid száma!\n\n%s volt a kitalálandó szó",game->dictionary->wordpool->word);
         char ideg;
         ideg=econio_getch();
         switch(ideg){
@@ -88,12 +96,24 @@ static bool game_loop(GameVars* game){
             CloseGame(game);
             game=initialize();
             break;
+        }
     }
-        
-    } 
+    else{
+        char ideg;
+        ideg=econio_getch();
+        switch(ideg){
+        case '0': return false;
+        //reset game
+        default:
+            CloseGame(game);
+            game=initialize();
+            break;
+        }
+    }
     return true;
 }
 
+    
 void run_game(GameVars* game){
     while(game_loop(game)){
         ;

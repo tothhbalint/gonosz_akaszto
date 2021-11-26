@@ -52,7 +52,7 @@ static void load_medium(DictionaryVars* Dictionary){
 static void load_hard(DictionaryVars* Dictionary){
     Dictionary->no_words=0;
     while(fgets(line,sizeof(line),Dictionary->dictionary)){
-        if(strlen(line)>8){
+        if(strlen(line)>10&&strlen(line)<13){
             line[strlen(line)-1]='\0';
             Words* new = (Words*)malloc(sizeof(Words));
             new->word=(char*)malloc(sizeof(char)*(strlen(line)+1));

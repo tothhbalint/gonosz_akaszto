@@ -20,7 +20,8 @@ typedef struct Guesses{
 typedef struct GameVars{
     int difficulty;
     int lang;
-    bool won;
+    bool lost;
+    int lives;
     Guesses* guesses;
     char* current_clue;
     DictionaryVars* dictionary;
@@ -31,5 +32,6 @@ GameVars* InitGame(int difficulty,int lang);
 //Játék változói megszüntetése új játék, kilépés esetére
 void CloseGame(GameVars* game);
 void add_guess(char new,GameVars* game);
+void free_set(Words* set);
 
 #endif

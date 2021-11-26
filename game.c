@@ -30,15 +30,16 @@ static char* get_base_clue(GameVars* game){
     //szóhossz generálása
     switch(game->difficulty){
         case 1:
-            wordlen=rand()%2+4;
+            wordlen=rand()%3+4;
             break;
         case 2:
-            wordlen=rand()%2+6;
+            wordlen=rand()%3+6;
             break;
         case 3:
-            wordlen=rand()%5+8;
+            wordlen=rand()%3+9;
             break;
     }
+    game->lives=2*wordlen;
     //szólista szűkítése
     Words* temp1=game->dictionary->wordpool;
     for (; temp1!=NULL && temp1->next!=NULL; temp1=temp1->next)
@@ -90,6 +91,7 @@ bool check_all_words(char new,DictionaryVars dict){
     {
      if(check_guess(new,dict.wordpool->word))return true;
     }
+    return false;
 }
 
 
@@ -103,12 +105,18 @@ static bool isin(char new, GameVars* game){
     return false;
 }
 
+int space_left(char* str){
+    int left=0;
+    for (int i = 0; i < strlen(str); i++)
+    {
+        if(str[i]=='_')left++;
+    }
+    return left;
+}
+
 char** gen_new_patterns(char* pattern,char guess){
     int empty=0;
-    for (int i = 0; i < strlen(pattern); i++)
-    {
-        empty++;
-    }
+    empty=space_left(pattern);
     char** patterns=(char**)malloc(sizeof(char*)*pow(2,empty));
     for (int i = 0; i < pow(2,empty); i++)
     {
@@ -165,15 +173,30 @@ void free_set(Words* wordset){
     }
 }
 
+bool dead_end(Words* words,char* pattern){
+    Words* moving;
+    int similar=0;
+    if(space_left(pattern)==0)return true;
+    if(space_left(pattern)==1)return true;
+    for (; words!=NULL; words=words->next)
+    {
+        moving=words->next;
+        for (;moving!=NULL; moving=moving->next)
+        {   
+            for (int i = 0; i < strlen(pattern); i++)
+            {
+                if(pattern[i]=='_'){
+                    if(moving->word[i]==words->word[i])similar+=2;
+                }
+            }
+        }
+    }
+    return similar<space_left(pattern);
+}
+
 void delete_guess(Guesses* guess){
-    guess->number_of_guesses--;
-    char* temp=guess->guesses;
-    guess->guesses=(char*)malloc(sizeof(char)*guess->correct+1);
-    strncpy(guess->guesses,temp,guess->number_of_guesses);
-    guess->guesses[guess->number_of_guesses]='\0';
-    free(temp);
     guess->correct--;
-    temp=guess->correct_guesses;
+    char* temp=guess->correct_guesses;
     guess->correct_guesses=(char*)malloc(sizeof(char)*guess->correct+1);
     strncpy(guess->correct_guesses,temp,guess->correct);
     guess->correct_guesses[guess->correct]='\0';
@@ -200,9 +223,29 @@ Words* get_set(GameVars* game,char* pattern,char guess){
     return wordset;
 }
 
-void evil(GameVars* game){
-    if((game->dictionary->no_words<3)){
-    delete_guess(game->guesses);
+Words* evil(GameVars* game,Words* set,char guess){
+    switch(space_left(game->current_clue)){
+        case 1:
+            game->lost=true;
+            if(!strcmp(game->dictionary->wordpool->word,set->word)){
+                if(game->dictionary->wordpool->next!=NULL) {
+                    game->dictionary->wordpool=game->dictionary->wordpool->next;
+                    free_set(set);
+                }
+            }else{
+                for (int i = 0; i < strlen(game->current_clue); i++)
+                {
+                    if(game->current_clue[i]=='_') set->word[i]=guess;
+                    else set->word[i]=game->current_clue[i];
+                }
+            }
+            bad_guess(game,set);
+            return NULL;
+            break;
+        default:
+            free_set(set);
+            return game->dictionary->wordpool;
+            break;
     }
 }
 
@@ -213,7 +256,7 @@ Words* biggest_set(GameVars* game,char guess){
     patterns=gen_new_patterns(game->current_clue,guess);
     char* final_pattern;
     free(patterns[0]);
-    for (int i = 1; i < pow(2,strlen(game->current_clue)); i++)
+    for (int i = 1; i < pow(2,space_left(game->current_clue)); i++)
     {
         if(!strcmp(patterns[i],game->current_clue)){
             free(patterns[i]);
@@ -234,17 +277,30 @@ Words* biggest_set(GameVars* game,char guess){
             }
         }
     }
-    game->dictionary->no_words=currentbig;
-    evil(game);
-    free(game->current_clue);
-    game->current_clue=(char*)malloc(sizeof(char)*(strlen(final_pattern)+1));
-    strcpy(game->current_clue,final_pattern);
-    free(final_pattern);
-    free(patterns);
-    free_set(game->dictionary->wordpool);
-    return set;
+    if(dead_end(set,game->current_clue)){
+        free(patterns);
+        set = evil(game,set,guess);
+        if(set==NULL){
+            free(final_pattern);
+            return game->dictionary->wordpool;
+        }
+        delete_guess(game->guesses);
+        free(final_pattern);
+        bad_guess(game,set);
+        return set;
+    }
+    else{
+        if(currentbig==1)return game->dictionary->wordpool;
+        game->dictionary->no_words=currentbig;
+        free(game->current_clue);
+        game->current_clue=(char*)malloc(sizeof(char)*(strlen(final_pattern)+1));
+        strcpy(game->current_clue,final_pattern);
+        free(final_pattern);
+        free(patterns);
+        free_set(game->dictionary->wordpool);
+        return set;
+    }
 }
-
 void add_guess(char new, GameVars* game){
     if(!isin(new,game)){
         //többi tipp tárolása
@@ -267,17 +323,18 @@ void add_guess(char new, GameVars* game){
             game->dictionary->wordpool=biggest_set(game,new);
         }
         else {
-            bad_guess(game);
+            bad_guess(game,game->dictionary->wordpool);
         }
     }
 }
 
 GameVars* InitGame(int difficulty,int lang){
     GameVars* game=(GameVars*)malloc(sizeof(GameVars));
-    game->won=false;
+    game->lost=false;
     game->guesses=guessed_foglal();
     game->lang=lang;
     game->difficulty=difficulty;
+    game->lives=0;
     game->dictionary=load_dictionary(difficulty,lang);
     game->current_clue=get_base_clue(game);
     return game;
@@ -288,4 +345,4 @@ void CloseGame(GameVars* game){
     guessed_free(game->guesses);
     clear_dictionary(game->dictionary);
     free(game);
-}
+}/* code */
