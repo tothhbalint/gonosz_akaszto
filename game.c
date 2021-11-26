@@ -58,11 +58,6 @@ static char* get_base_clue(GameVars* game){
         if(word[i]='0')
             word[i]='_';
     }
-    word[wordlen]='\0';
-    Words* first=(Words*)malloc(sizeof(Words)*strlen(word)+1);
-    first->word=word;
-    first->next=game->dictionary->wordpool;
-    game->dictionary->wordpool=first;
     return word;
 }
 
@@ -74,15 +69,6 @@ char get_guess(){
 
 
 bool check_guess(char new,char *word){
-    bool empty=false;
-    for (int i = 0; i < strlen(word); i++)
-    {
-        if (word[i]=='_')
-        {
-            empty=true;
-        }else empty = false;
-        if(empty) return true;
-    }
     for (int i = 0; i < strlen(word); i++)
     {
         if(new==word[i]) return true;
@@ -100,12 +86,10 @@ bool check_all_words(char new,DictionaryVars dict){
         }else empty = false;
         if(empty) return true;
     }
-    bool out;
     for (; dict.wordpool!=NULL; dict.wordpool=dict.wordpool->next)
     {
-     out=check_guess(new,dict.wordpool->word);
+     if(check_guess(new,dict.wordpool->word))return true;
     }
-    return out;
 }
 
 
@@ -176,6 +160,7 @@ void free_set(Words* wordset){
     while(wordset!=NULL){
         temp=wordset;
         wordset=wordset->next;
+        free(temp->word);
         free(temp);
     }
 }
@@ -202,7 +187,9 @@ Words* get_set(GameVars* game,char* pattern,char guess){
     {
         if(pattern_match(pattern,temp->word,guess)){
             Words* tmp=(Words*)malloc(sizeof(Words));
-            tmp->word=temp->word;
+            tmp->word=(char*)malloc(sizeof(char)*(strlen(temp->word)+1));
+            strcpy(tmp->word,temp->word);
+            tmp->word[strlen(temp->word)]='\0';
             temp=temp->next;
             tmp->next=wordset;
             wordset=tmp;
@@ -211,6 +198,12 @@ Words* get_set(GameVars* game,char* pattern,char guess){
         }
     }
     return wordset;
+}
+
+void evil(GameVars* game){
+    if((game->dictionary->no_words<3)){
+    delete_guess(game->guesses);
+    }
 }
 
 Words* biggest_set(GameVars* game,char guess){ 
@@ -241,18 +234,14 @@ Words* biggest_set(GameVars* game,char guess){
             }
         }
     }
-    sizeof_set=currentbig;
-    if((currentbig<strlen(game->current_clue))){
-        delete_guess(game->guesses);
-        return game->dictionary->wordpool;
-    }
+    game->dictionary->no_words=currentbig;
+    evil(game);
     free(game->current_clue);
     game->current_clue=(char*)malloc(sizeof(char)*(strlen(final_pattern)+1));
     strcpy(game->current_clue,final_pattern);
     free(final_pattern);
     free(patterns);
     free_set(game->dictionary->wordpool);
-    game->dictionary->no_words=currentbig;
     return set;
 }
 
@@ -295,6 +284,7 @@ GameVars* InitGame(int difficulty,int lang){
 }
 
 void CloseGame(GameVars* game){
+    free(game->current_clue);
     guessed_free(game->guesses);
     clear_dictionary(game->dictionary);
     free(game);
