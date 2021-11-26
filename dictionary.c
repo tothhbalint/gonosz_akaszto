@@ -9,7 +9,6 @@ static char line[450];
 
 static void clear_pool(DictionaryVars* Dictionary){
     Words* temp;
-
     while(Dictionary->wordpool!=NULL){
         temp = Dictionary->wordpool;
         Dictionary->wordpool=Dictionary->wordpool->next;

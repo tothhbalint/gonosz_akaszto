@@ -30,7 +30,7 @@ static char* get_base_clue(GameVars* game){
     //szóhossz generálása
     switch(game->difficulty){
         case 1:
-            wordlen=5;
+            wordlen=rand()%2+4;
             break;
         case 2:
             wordlen=rand()%2+6;
@@ -72,7 +72,25 @@ char get_guess(){
     return temp;
 }
 
-bool check_guess(char new,DictionaryVars dict){
+
+bool check_guess(char new,char *word){
+    bool empty=false;
+    for (int i = 0; i < strlen(word); i++)
+    {
+        if (word[i]=='_')
+        {
+            empty=true;
+        }else empty = false;
+        if(empty) return true;
+    }
+    for (int i = 0; i < strlen(word); i++)
+    {
+        if(new==word[i]) return true;
+    }
+    return false;
+}
+
+bool check_all_words(char new,DictionaryVars dict){
     bool empty=false;
     for (int i = 0; i < strlen(dict.wordpool->word); i++)
     {
@@ -82,13 +100,14 @@ bool check_guess(char new,DictionaryVars dict){
         }else empty = false;
         if(empty) return true;
     }
-    
-    for (int i = 0; i < strlen(dict.wordpool->word); i++)
+    bool out;
+    for (; dict.wordpool!=NULL; dict.wordpool=dict.wordpool->next)
     {
-        if(new==dict.wordpool->word[i]) return true;
+     out=check_guess(new,dict.wordpool->word);
     }
-    return false;
+    return out;
 }
+
 
 static bool isin(char new, GameVars* game){
     for (int i = 0; i < game->guesses->number_of_guesses; i++)
@@ -162,8 +181,14 @@ void free_set(Words* wordset){
 }
 
 void delete_guess(Guesses* guess){
+    guess->number_of_guesses--;
+    char* temp=guess->guesses;
+    guess->guesses=(char*)malloc(sizeof(char)*guess->correct+1);
+    strncpy(guess->guesses,temp,guess->number_of_guesses);
+    guess->guesses[guess->number_of_guesses]='\0';
+    free(temp);
     guess->correct--;
-    char* temp=guess->correct_guesses;
+    temp=guess->correct_guesses;
     guess->correct_guesses=(char*)malloc(sizeof(char)*guess->correct+1);
     strncpy(guess->correct_guesses,temp,guess->correct);
     guess->correct_guesses[guess->correct]='\0';
@@ -201,10 +226,8 @@ Words* biggest_set(GameVars* game,char guess){
             free(patterns[i]);
         }
         else{
-        strcpy(game->dictionary->wordpool->word,patterns[i]);
-        if(pattern_match(patterns[i],game->dictionary->wordpool->word,guess)){
-            Words* tmp=get_set(game,patterns[i],guess);
-            int size=get_set_size(tmp);
+        Words* tmp=get_set(game,patterns[i],guess);
+        int size=get_set_size(tmp);
             if(size>currentbig){ 
                 if(set!=NULL)free_set(set);
                 if(currentbig!=0)free(final_pattern);
@@ -212,19 +235,14 @@ Words* biggest_set(GameVars* game,char guess){
                 set=tmp;
                 final_pattern=patterns[i];
             }
-            else
-            {
+            else{
                 free(patterns[i]);
                 free_set(tmp);
             }
         }
-        else{
-            free(patterns[i]);
-        }
-        }
     }
     sizeof_set=currentbig;
-    if((currentbig<3)){
+    if((currentbig<strlen(game->current_clue))){
         delete_guess(game->guesses);
         return game->dictionary->wordpool;
     }
@@ -248,7 +266,7 @@ void add_guess(char new, GameVars* game){
         temp[game->guesses->number_of_guesses-1]=new;
         game->guesses->guesses=temp;;
         game->guesses->guesses[game->guesses->number_of_guesses]='\0';
-        if(check_guess(new,*game->dictionary)){
+        if(check_all_words(new,*game->dictionary)){
             game->guesses->correct++;
             char* temp=(char*)malloc((game->guesses->correct+1)*sizeof(char));
             //jó tipp tárolása
@@ -260,22 +278,8 @@ void add_guess(char new, GameVars* game){
             game->dictionary->wordpool=biggest_set(game,new);
         }
         else {
-            Words* temp=game->dictionary->wordpool;
-            for (; temp->next!=NULL; temp->next=temp->next->next)
-            {
-                for (int i = 0; i < strlen(temp->word); i++)
-                {
-                    if(new==temp->next->word[i]){
-                        printf("\n%s volt a tipped\n",temp->next->word);
-                        game->won=true;
-                    }
-                }
-                
-            }
             bad_guess(game);
-            
-        };
-
+        }
     }
 }
 

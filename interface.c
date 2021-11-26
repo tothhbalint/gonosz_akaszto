@@ -7,11 +7,10 @@
 void bad_guess(GameVars* game){
     econio_clrscr();
     if(!game->won)
-        printf("Hibas a tipp tesomsz\n");
+        printf("Hibas a tipp tesomsz\n\n");
 }
 
 static void write_menu(){
-    econio_clrscr();
     printf("0) Kilépés (1) Menü\n");
 }
 
@@ -70,14 +69,16 @@ static bool game_loop(GameVars* game){
             case '1':
                 CloseGame(game);
                 game=initialize();
+                econio_clrscr();
                 break;
             default:
+                econio_clrscr();
                 add_guess(ideg,game);
                 break;
         }
     }
     else{
-        printf("%s volt a szo\nVesztettel\nSok sikert legkozelebb\n*Új játékhoz nyomj meg egy gombot*\n",game->dictionary->wordpool->word);
+        printf("%s volt a szo\nVesztettel\nSok sikert legkozelebb\n*Új játékhoz nyomj meg egy gombot*\n",game->dictionary->wordpool->next->word);
         char ideg;
         ideg=econio_getch();
         switch(ideg){
