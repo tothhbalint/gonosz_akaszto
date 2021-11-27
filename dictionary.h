@@ -12,10 +12,9 @@ typedef struct Words{
 }Words;
 
 typedef struct DictionaryVars{
-    //szótárra mutató pointerg
-    FILE* dictionary;
     //szavak halmaza
     Words* wordpool;
+    int wordlen;
     int no_words;
 }DictionaryVars;
 
