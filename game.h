@@ -1,3 +1,7 @@
+/**
+ * @file
+ */
+
 #ifndef GAME_H
 #define GAME_H
 
@@ -9,28 +13,38 @@
 #include "dictionary.h"
 
 
-//tippeket tároló struktúra
+/**tippeket tároló struktúra*/
 typedef struct Guesses{
-    char* guesses; /// a tipplet betűk
-    int number_of_guesses; // hány tipp volt
-    char* correct_guesses; // jó tippek betűi
-    int correct; // hány jó tipp volt
+    /** a tippelt betűk*/
+    char* guesses; 
+    /** hány tipp volt*/
+    int number_of_guesses;
+     /** jó tippek betűi*/
+    char* correct_guesses;
+    /** hány jó tipp volt*/
+    int correct;
 }Guesses;
 
+/**Játék változóit tároló struktúra*/
 typedef struct GameVars{
-    int difficulty;
-    int lang;
-    bool won;  // vesztett-e a játékos
-    Guesses* guesses; // a tippek a játék során
-    char* current_clue; // megjelenítendő minta
-    DictionaryVars* dictionary; // a meg szóba jöhető szavak listája
+    /** játék nehézsége*/
+    int difficulty; 
+    /**szavak nyelve*/
+    int lang; 
+    /**vége van e a játéknak*/
+    bool won;
+    /**életek száma*/
+    int lives; 
+    /** a tippek a játék során*/
+    Guesses* guesses; 
+    /** megjelenítendő minta*/
+    char* current_clue; 
+    /**a meg szóba jöhető szavak listája*/
+    DictionaryVars* dictionary;
 }GameVars;
 
-//Játék változóinak létrehozása
 GameVars* InitGame(int difficulty,int lang);
-//Játék változói megszüntetése új játék, kilépés esetére
 void CloseGame(GameVars* game);
 void add_guess(char new,GameVars* game);
-void free_set(Words* set);
 
 #endif

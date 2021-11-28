@@ -1,3 +1,7 @@
+/**
+ *@file 
+ */
+
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 #include <stdio.h>
@@ -5,22 +9,30 @@
 #include <string.h>
 #include <stdlib.h>
 
-//szavakat tároló láncolt lista
+/**
+ * szavakat tároló láncolt lista
+*/
 typedef struct Words{
-    char* word;
-    struct Words* next;
+    /**szó a listában */
+    char* word; 
+    /**következő listaelem pointere*/
+    struct Words* next; 
 }Words;
 
+
+/**
+* Szótár változók
+*/
 typedef struct DictionaryVars{
-    //szavak halmaza
-    Words* wordpool;
+    /**szavak listája*/
+    Words* wordpool; 
+    /**szavak hossza*/
     int wordlen;
+    /**szavak száma*/
     int no_words;
 }DictionaryVars;
 
-//Szótár fájl megnyitása, szavak beolvasása
 DictionaryVars* load_dictionary(int difficulty,int lan);
-//láncolt lista felszabadítása
 void clear_dictionary(DictionaryVars* Dictionary);
 
 

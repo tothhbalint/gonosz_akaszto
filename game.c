@@ -1,9 +1,21 @@
+/**
+ * @file
+ * @section LEÍRÁS
+ * A fájl kezeli a játék változóit, a menetét
+ * */
 #include "game.h"
 #include "interface.h"
 #include "time.h"
 #include "debugmalloc.h"
 #include "math.h"
 
+/**
+ * standard függvény újraírva kb, hogy debugmallocal használható legyen
+ * @param str bemeneti string
+ * @param new bégére füzendő karakter
+ * @param len új hossz
+ * @return az új string
+ * */
 char* stradd(char* str, char new,int len){
     char* temp=(char*)malloc((len+1)*sizeof(char));
     if(new!='\0'){
@@ -19,6 +31,10 @@ char* stradd(char* str, char new,int len){
     return str;
 }
 
+/**
+ * Lefoglalja a tippek struktúráját
+ * @return visszaadja a struktúrát
+ * */
 Guesses* guessed_alloc(){
     Guesses* guesses=(Guesses*)malloc(sizeof(Guesses));
     guesses->number_of_guesses=0;
@@ -28,12 +44,21 @@ Guesses* guessed_alloc(){
     return guesses;
 }
 
+
+/**
+ * Felszabadítja a tippek struktúráját
+ * @return nincs
+ * */
 void guessed_free(Guesses *guesses){
     free(guesses->correct_guesses);
     free(guesses->guesses);
     free(guesses);
 }
-
+/**
+ * Létrehoz egy mintát a szavak hossza alapján
+ * @param game A játék változói, a szavak hossza miatt
+ * @return visszatér a mintával
+ * */
 static char* get_base_clue(GameVars* game){
     char* word=(char*)calloc((game->dictionary->wordlen+1),sizeof(char));
     //alap "rejtett" szó minta _____ forma
@@ -45,6 +70,12 @@ static char* get_base_clue(GameVars* game){
     return word;
 }
 
+/**
+ * Megnézi, hogy a a karakter bennevan bármelyik szóban is
+ * @param new karakter amit keresünk
+ * @param dict tárolj a listát amiben keresünk
+ * @return
+ * */
 bool check_all_words(char new,DictionaryVars dict){
     bool empty=false;
     for (int i = 0; i < strlen(dict.wordpool->word); i++)
@@ -62,7 +93,12 @@ bool check_all_words(char new,DictionaryVars dict){
     return false;
 }
 
-// hány üres hely van a szóban
+
+/**
+ * Megkeresi az üres helyeket egy mintában
+ * @param str egy minta amiben keresünk helyeket('_')
+ * @return hátralévő helyek száma
+ * */
 int space_left(char* str){
     int left=0;
     for (int i = 0; i < strlen(str); i++)
@@ -72,6 +108,12 @@ int space_left(char* str){
     return left;
 }
 
+/**
+ * Létrehozza a lehetséges szó mintákat
+ * @param pattern mostani minta, alapból _ * szóhossz  
+ * @param guess az új tipp, amivel generáljuk a mintákat
+ * @return a minták halmaza
+ * */
 char** gen_new_patterns(char* pattern,char guess){
     int empty=0;
     empty=space_left(pattern);
@@ -95,6 +137,13 @@ char** gen_new_patterns(char* pattern,char guess){
     return patterns;
 }
 
+/**
+ * Megnézi, hogy az adott szó illik e a mintára
+ * @param pattern minta amihez hasonlítunk
+ * @param word szó amit hasonlítunk
+ * @param guess jelenlegi tipp
+ * @return igaz, ha ráillik, hamis ha nem
+ * */
 bool pattern_match(char* pattern,char* word,char guess){
         bool temp=false;
         for (int j = 0; j < strlen(word); j++)
@@ -111,6 +160,11 @@ bool pattern_match(char* pattern,char* word,char guess){
         return temp;
     }
 
+/**
+ * Visszaadja a szavak számát egy listában
+ * @param wordset 
+ * @return szavak száma
+ * */
 int get_set_size(Words* wordset){
     int size=0;
     while (wordset!=NULL)
@@ -121,6 +175,11 @@ int get_set_size(Words* wordset){
     return size;
 }
 
+/**
+ * Felszabadítja a szavak listáját
+ * @param wordset felszabadítandó list
+ * @return nincs
+ * */
 void free_set(Words* wordset){
     Words* temp;
     while(wordset!=NULL){
@@ -131,15 +190,13 @@ void free_set(Words* wordset){
     }
 }
 
-void delete_guess(Guesses* guess){
-    guess->correct--;
-    char* temp=guess->correct_guesses;
-    guess->correct_guesses=(char*)malloc(sizeof(char)*guess->correct+1);
-    strncpy(guess->correct_guesses,temp,guess->correct);
-    guess->correct_guesses[guess->correct]='\0';
-    free(temp);
-}
-
+/**
+ * Alhalmazt csinál a szavak halmazából a minta alapján
+ * @param game szavak főhalmaza
+ * @param pattern minta
+ * @param guess jelenlegi tipp
+ * @return alhalmaz
+ * */
 Words* get_set(GameVars* game,char* pattern,char guess){
     Words* wordset=NULL;
     Words* temp=game->dictionary->wordpool;
@@ -160,6 +217,12 @@ Words* get_set(GameVars* game,char* pattern,char guess){
     return wordset;
 }
 
+/**
+ * Megkeresi a legnagyobb alhalmazt ami megfelel a feltételeknek
+ * @param game játék változók
+ * @param guess jelenlegi tipp
+ * @return legnagyobb alhalmaz
+ * */
 Words* biggest_set(GameVars* game,char guess){ 
     Words* set=NULL;
     char** patterns;
@@ -199,10 +262,11 @@ Words* biggest_set(GameVars* game,char guess){
     return set;
 }
 
-/// Kiértékel egy tippet, megadja rá a választ.
-/// @param new a tippelt betü
-/// @param game a játék
-/// @return nincs
+/** Kiértékel egy tippet, megadja rá a választ.
+* @param new a tippelt betü
+* @param game a játék
+* @return nincs
+**/
 void add_guess(char new, GameVars* game){
     if(strchr(game->guesses->guesses,new)==NULL){
         //többi tipp tárolása
@@ -219,17 +283,29 @@ void add_guess(char new, GameVars* game){
     }
 }
 
+/**
+ * Inicializálja a játékot
+ * @param difficulty játék nehézsége
+ * @param lang játék szavainak nyelve
+ * @return játék változói
+ * */
 GameVars* InitGame(int difficulty,int lang){
     GameVars* game=(GameVars*)malloc(sizeof(GameVars));
     game->won=false;
     game->guesses=guessed_alloc();
     game->lang=lang;
     game->difficulty=difficulty;
+    game->lives=22;
     game->dictionary=load_dictionary(difficulty,lang);
     game->current_clue=get_base_clue(game);
     return game;
 }
 
+/**
+ * Felszabadítja a jelenlegi játékot
+ * @param game játékváltozók
+ * @return nincs
+ * */
 void CloseGame(GameVars* game){
     free(game->current_clue);
     guessed_free(game->guesses);

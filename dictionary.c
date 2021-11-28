@@ -1,12 +1,28 @@
+/**
+ * @file
+ * @section LEÍRÁS
+ * A fájlban vannak kezelve a szavak, beolvassa őket és lánvolja egy listába
+ * */
 #include "dictionary.h"
 #include "string.h"
 #include "debugmalloc.h"
 #include "time.h"
 
+/**
+ * Konstans, ami tárolja a szavak hosszát, nehézség szerint indexelve
+ * */
 static const int len[3]={4,6,9};
 
+/**
+ * Konstans, ami a nyelvekhez tartozó szótárak elérési helyét tárolja
+ * */
 static const char* files[2]={"szotar/szavak_magyar.txt","szotar/szavak_angol.txt"};
 
+/**
+ * A függvény felszabadítja a szavak lámncolt listáját
+ * @param Dictionary fogad egy Szótár változót, aminek eleme a szavak listája
+ * @return nincs
+ * */
 static void clear_pool(DictionaryVars* Dictionary){
     Words* temp;
     while(Dictionary->wordpool!=NULL){
@@ -17,6 +33,13 @@ static void clear_pool(DictionaryVars* Dictionary){
     }
 }
 
+/**
+ * A függvény beolvassa a fájlt, és a nehézség szerint random hosszú szavakat eltárolja egy láncolt listába
+ * @param difficulty nehézség változója
+ * @param Dictionary A fájl változói, ami tárolj a szavak hosszát és a listát ami feltölt
+ * @param dictionary A beolvasandó fájl
+ * @return nincs
+ * */
 static void load_pool(int difficulty, DictionaryVars* Dictionary,FILE* dictionary){
     srand(time(0));
     static char line[450];
@@ -38,7 +61,12 @@ static void load_pool(int difficulty, DictionaryVars* Dictionary,FILE* dictionar
         perror("nem sikerült feltölteni a listát szavakkal");
     }
 }
-
+/**
+ * Megnyitja a megfelelő fájlt
+ * @param difficulty A játék nehézsége, tovabbadja a láncolt lista betöltéséhez
+ * @param lang A játék szavainak nyelve
+ * @return szótár változók, ami a szavakat és ezek hosszát tárolja
+ * */
 DictionaryVars* load_dictionary(int difficulty,int lang){
     DictionaryVars* Dictionary=malloc(sizeof(DictionaryVars));
     FILE* dictionary;
@@ -52,7 +80,11 @@ DictionaryVars* load_dictionary(int difficulty,int lang){
     return Dictionary;
 }
 
-
+/**
+ * Felszabadítja a szótár változótit
+ * @param dictionary a felszabadítondó változók csoportja
+ * @return nincs
+ * */
 void clear_dictionary(DictionaryVars* dictionary){
     dictionary->no_words=0;
     clear_pool(dictionary);
