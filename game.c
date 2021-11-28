@@ -2,12 +2,7 @@
 #include "interface.h"
 #include "time.h"
 #include "debugmalloc.h"
-#include "econio.h"
 #include "math.h"
-#include "dictionary.h"
-#include "time.h"
-
-static int sizeof_set=0;
 
 char* stradd(char* str, char new,int len){
     char* temp=(char*)malloc((len+1)*sizeof(char));
@@ -187,7 +182,13 @@ Words* biggest_set(GameVars* game,char guess){
                 free_set(tmp);
             }
     }
-    if(currentbig==1)return game->dictionary->wordpool;
+    if(space_left(final_pattern)==0){
+        game->won=true;
+        bad_guess(game);
+    }
+    if(!strcmp(game->current_clue,final_pattern)){
+        bad_guess(game);
+    }
     game->dictionary->no_words=currentbig;
     free(game->current_clue);
     game->current_clue=(char*)malloc(sizeof(char)*(game->dictionary->wordlen+1));
@@ -198,7 +199,10 @@ Words* biggest_set(GameVars* game,char guess){
     return set;
 }
 
-//  válaszol egy tippre
+/// Kiértékel egy tippet, megadja rá a választ.
+/// @param new a tippelt betü
+/// @param game a játék
+/// @return nincs
 void add_guess(char new, GameVars* game){
     if(strchr(game->guesses->guesses,new)==NULL){
         //többi tipp tárolása
@@ -210,19 +214,18 @@ void add_guess(char new, GameVars* game){
             game->dictionary->wordpool=biggest_set(game,new);
         }
         else {
-            bad_guess(game,game->dictionary->wordpool);
+            bad_guess(game);
         }
     }
 }
 
 GameVars* InitGame(int difficulty,int lang){
     GameVars* game=(GameVars*)malloc(sizeof(GameVars));
-    game->lost=false;
+    game->won=false;
     game->guesses=guessed_alloc();
     game->lang=lang;
     game->difficulty=difficulty;
     game->dictionary=load_dictionary(difficulty,lang);
-    game->lives=game->dictionary->wordlen*2;
     game->current_clue=get_base_clue(game);
     return game;
 }

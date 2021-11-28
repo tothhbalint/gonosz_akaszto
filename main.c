@@ -18,12 +18,9 @@ int main(){
     run_game(game);
     
     printf("\n*Nyomd meg a spacet a kilépéshez*\n");
-    
+    fflush(stdout);
     do{
-        if(econio_getch()==' ') break;
+        if(getc(stdin)==' ') break;
     }while(true);
-
-    //econio_clrscr();
-    
     return 0;
 }

@@ -20,8 +20,7 @@ typedef struct Guesses{
 typedef struct GameVars{
     int difficulty;
     int lang;
-    bool lost;  // vesztett-e a játékos
-    int lives; // hány élete (tippje van még hátra)
+    bool won;  // vesztett-e a játékos
     Guesses* guesses; // a tippek a játék során
     char* current_clue; // megjelenítendő minta
     DictionaryVars* dictionary; // a meg szóba jöhető szavak listája

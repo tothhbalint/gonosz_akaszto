@@ -4,14 +4,23 @@
 #include "debugmalloc.h"
 #include "econio.h"
 
-void bad_guess(GameVars* game,Words* set){
-    econio_clrscr();
-    game->lives--;
-    if(!game->lost)
+void clear(){
+    #ifdef _WIN32
+    system("cls");
+    #else 
+    system("clear");
+    #endif
+}
+
+void bad_guess(GameVars* game){
+    clear();
+    if(!game->won) {
         printf("Rossz a tipp!\n\n");
+        fflush(stdout);
+    }
     else{
-        printf("A tipped %s volt\nA szó %s volt\nVesztettel\nSok sikert legkozelebb\n*Új játékhoz nyomj meg egy gombot*\n",set->word,game->dictionary->wordpool->word);
-        free_set(set);
+        printf("A szó %s volt\nGratulálok\n\n*Új játékhoz nyomj meg egy gombot*\n",game->dictionary->wordpool->word);
+        fflush(stdout);
     }
 }
 
@@ -20,29 +29,33 @@ static void write_menu(){
 }
 
 static void write_game(GameVars* game){
-    printf("Életeid száma:%d\n",game->lives);
     if(game->guesses->number_of_guesses>0){
         printf("\nEddigi tippjeid:%s",game->guesses->guesses);
+        fflush(stdout);
     }else{
         printf("Sok szerencsét!");
+        fflush(stdout);
     }
     printf("\nA kitalálandó szó:%s\nMi a következő tipped?\n",(game->current_clue));
+    fflush(stdout);
 }
 
 
 static int choose_lang(){
     int lang=0;
     while(true){
-        printf("Milyen nyelven szeretnél játszani?\n 1-Magyar 2-Angol \n");
+        printf("\nMilyen nyelven szeretnél játszani?\n 1-Magyar 2-Angol \n");
+        fflush(stdout);
         fflush(stdin);
-        lang=econio_getch()-'0';
+        lang=getc(stdin)-'0';
         if(lang==1||lang==2){
-            econio_clrscr();
+            clear();
             return lang-=1;
         }
         else{
-            econio_clrscr();
+            clear();
             printf("Egyet vagy Kettőt adj meg!\n");
+            fflush(stdout);
         }
     }
 }
@@ -51,23 +64,25 @@ static int choose_difficulty(){
     int difficulty;
     while(true){
         printf("Milyen nehézségen szeretnél játszani?\n 1-Könnyű 2-Közepes 3-Nehéz \n");
+        fflush(stdout);
         fflush(stdin);
-        difficulty=econio_getch()-'0';
-        econio_clrscr();
+        difficulty=getc(stdin)-'0';
+        clear();
         if(difficulty==1||difficulty==2||difficulty==3){
-            econio_clrscr();
+            clear();
             return difficulty-=1;
         }
         else{
-            econio_clrscr();
+            clear();
             printf("1-3 közt add meg a nehézséget");
+            fflush(stdout);
         }
     }
-    econio_clrscr();
+
 }
 
 GameVars* initialize(){
-    econio_clrscr();
+    clear();
     int lang=choose_lang();
     int difficulty=choose_difficulty();
     GameVars* game=InitGame(difficulty,lang);
@@ -76,39 +91,26 @@ GameVars* initialize(){
 
 static bool game_loop(GameVars* game){
     write_menu();
-    if(!game->lost&&game->lives!=0){
+    if(!game->won){
         write_game(game);
-        char ideg=econio_getch();
+        char ideg=getc(stdin);
         switch(ideg){
             case '0': return false;
             //reset game
             case '1':
                 CloseGame(game);
                 game=initialize();
-                econio_clrscr();
+                clear();
                 break;
             default:
-                //econio_clrscr();
+                clear();
                 add_guess(ideg,game);
                 break;
         }
     }
-    else if(game->lives==0){
-        printf("Elfogyott a próbáid száma!\n\n%s volt a kitalálandó szó",game->dictionary->wordpool->word);
-        char ideg;
-        ideg=econio_getch();
-        switch(ideg){
-        case '0': return false;
-        //reset game
-        default:
-            CloseGame(game);
-            game=initialize();
-            break;
-        }
-    }
     else{
         char ideg;
-        ideg=econio_getch();
+        ideg=getc(stdin);
         switch(ideg){
         case '0': return false;
         //reset game
@@ -127,5 +129,5 @@ void run_game(GameVars* game){
         ;
     }
     CloseGame(game);
-    econio_clrscr();
+    clear();
 };

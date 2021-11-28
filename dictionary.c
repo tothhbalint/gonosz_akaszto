@@ -3,8 +3,9 @@
 #include "debugmalloc.h"
 #include "time.h"
 
-static int len[4]={4,6,9};
-static char* files[2]={"szotar/szavak_magyar.txt","szotar/szavak_angol.txt"};
+static const int len[3]={4,6,9};
+
+static const char* files[2]={"szotar/szavak_magyar.txt","szotar/szavak_angol.txt"};
 
 static void clear_pool(DictionaryVars* Dictionary){
     Words* temp;
